@@ -1,0 +1,56 @@
+@@@运行本程序的前期准备工作@@@
+1.数据库中存在abklendwork表,且里面存储了过往的借阅记录条目
+2.准备好了日期参数,也就是开始和结束时间内的法定节假日,调休日期,寒暑假的开始和结束日期
+3.程序用到的临时表，程序在运行过程中会先行自动清空，不必担心数据混乱问题。
+4.读者是从真实数据库中选取的，如果某个年级还没有办理借书证，没有读者的话，就不会生成
+    相应的借阅记录，这个可以放心。
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>测试用句>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # hisy = lDay( beginDate, endDate, holiday, workday )
+    # Lw = gener('2015')
+    # rows = Bid( '一' )
+    # rid = Rid( '一' )
+-->>>>>>>>>>>>>>>>>>>>>>>>>>>>辅助回忆语句>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+--生成2016.9至2017.2（上半学年）的借阅记录
+--每行开头有四个注释符号，如“----”的，为废弃语句
+--同一时间段内，为防止同一本书同时被不同的人借阅，全部读者对应的bid不应重复
+--对每个年级分别生成，以一年级为例
+--对于法定节假日以及其他工作日的调整，尤其异常调整，如大雪天停课，平时应当记录
+--生成日期时，用holiday数组传入
+
+--选取一年级曾经借过的书
+--select * from abklendwork a where left(a.loperator,1) = '一';
+--select distinct bid from abklendwork a where left(a.loperator,1) = '一';
+--选取当前时间一年级读者   		下面语句的基础是部门名称第一个字符是年级 如 ‘一年级3班2022’
+--select rid, depname from reader r, department d where left(d.depname,1) = '一' and r.depid = d.depid;
+--select rid from reader r, department d where left(d.depname,1) = '一' and r.depid = d.depid;
+--生成临时表，读者写入4次，代表借阅4次
+--select rid into AtttRid  from reader r, department d where left(d.depname,1) = '一' and r.depid = d.depid;
+--insert into AtttRid select rid from reader r, department d where left(d.depname,1) = '一' and r.depid = d.depid;
+--insert into AtttRid select rid from reader r, department d where left(d.depname,1) = '一' and r.depid = d.depid;
+--insert into AtttRid select rid from reader r, department d where left(d.depname,1) = '一' and r.depid = d.depid;
+--select * from AtttRid;
+--drop table Atttrid;
+--随机选择bid写入临时表
+--select distinct  bid , newid() randUid into AtttBid from abklendwork a where left(a.loperator,1) = '一' order by newid();
+--drop table Atttbid;
+--select * from Atttbid;
+--测试合并两个表
+
+
+
+
+
+----rid和bid的笛卡尔积
+----select a.bid, r.rid from abklendwork a, reader r, department d where left(a.loperator,1) = '一' and left(d.depname,1) = '一' and r.depid = d.depid;
+----选取当前时间一年级读者 2016 + 7 - 1 = 2022 ,下面语句的基础是部门名称后四位是用阿拉伯数字表示的学生的毕业年份
+----选取某年级读者公式： 当前学年开始年份 + 7 - 在读年级 = 毕业年份
+----或者获取depname，用python查找子字符串，匹配‘一年级’
+----select rid, depname from reader r, department d where right(d.depname, 4) = right(str((2016 + 7 - 1)),4) and r.depid = d.depid;
+----select  len(str((2016 + 7 - 1));--这个字符串的长度是 10
+----select  str(2022);
+
+
+-->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+"""
