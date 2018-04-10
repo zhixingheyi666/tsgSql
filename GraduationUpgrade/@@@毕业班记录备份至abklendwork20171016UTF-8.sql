@@ -1,0 +1,64 @@
+﻿--select rid, depname from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid;
+--select r.rid, depname,bid,bcid,lenddate,loperator from reader r, department d,lendwork ld where left(d.depname,1) = '六' and r.rid = ld.rid and r.depid=d.depid;
+--select * from department;
+--select * from reader;
+--select * from abklendwork where left(loperator,1) = '三' ;
+--select * from  lendwork;
+--select * from lendwork where backdate is NULL;
+-----------------------------------------------------------------------------------------------------
+--1.保存毕业班的借阅史
+	--金典系统的会将毕业班的借阅记录完全删除
+	--我希望保留这部分记录，以便为<使用程序生成借阅记录>提供基础数据
+	--所以我将这部分借阅记录导入abklendwork中保存
+	--<借阅记录生成程序>需要知道：对于每条记录，学生借阅这本书的时候正在读几年级
+	--所以我在将毕业班记录导入abklendwork时，将记录按学生借阅时正在就读的年级分类，并通过在loperator前面加上相应汉字
+		--(如五姓名，表示当时正在就读五年级)  对借阅记录按借阅年级进行分类标记
+	--下面语句就是将毕业班借阅记录按照如上要求导入abklendwork的详细过程
+--选取毕业班借阅所有借阅记录
+--testI 6395
+--select  r.rid, depname,bid,bcid,lenddate,loperator from reader r, department d,lendwork ld where left(d.depname,1) = '六' and r.rid = ld.rid and r.depid=d.depid;
+--select rid, depname from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid；
+--testII 6395
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid);
+--testIII 6393 排除<未归还>的借阅记录
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL;
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL order by lenddate desc;
+--借阅时在读年级的判定 以毕业时间 如2017年7月15日为基准，减去1年，lenddate在2016年7月16至2017年7月15之间的，就是六年级时借阅的，依次类推
+--选取六年级时借过的书 1064
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL and lenddate between '2016-07-16' and '2017-07-15' order by lenddate desc;
+--选取五年级时借过的书 1747
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL and lenddate between '2015-07-16' and '2016-07-15' order by lenddate desc;
+--选取四年级时借过的书 1586
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL and lenddate between '2014-07-16' and '2015-07-15' order by lenddate desc;
+--选取三年级时借过的书 1064
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL and lenddate between '2013-07-16' and '2014-07-15' order by lenddate desc;
+--选取二年级时借过的书 932
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL and lenddate between '2012-07-16' and '2013-07-15' order by lenddate desc;
+--选取一年级时借过的书 0
+--select * from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL and lenddate between '2011-07-16' and '2012-07-15' order by lenddate desc;
+
+----先把毕业班的记录写入一个临时表格，然后修改loperator标记好借阅时就读的年级，然后导入abklendwork
+--select * into #t1 from lendwork where rid in (select rid from reader r, department d where left(d.depname,1) = '六' and r.depid = d.depid) and boperator is not NULL ;
+--select * from #t1;
+--更改loperator标记借阅时所在年级
+--update #t1 set loperator = '六'+loperator where  lenddate between '2016-07-16' and '2017-07-15';
+--update #t1 set loperator = '五'+loperator where lenddate between '2015-07-16' and '2016-07-15';
+--update #t1 set loperator = '四'+loperator where lenddate between '2014-07-16' and '2015-07-15';
+--update #t1 set loperator = '三'+loperator where lenddate between '2013-07-16' and '2014-07-15';
+--update #t1 set loperator = '二'+loperator where lenddate between '2012-07-16' and '2013-07-15'; 
+
+----drop table #t1;
+
+----把修改好的记录添加进abklendwork
+--查询原有记录数14492
+--select * from abklendwork;
+--查询原有六年级记录数 3811
+--select * from abklendwork where left(loperator,1) = '六';
+----从临时表中把整理好的数据插入abklendwork
+--insert into abklendwork select * from #t1;
+--插入后的验证 14492 + 6393 = 20885
+--select * from abklendwork;
+--select 14492 + 6393;
+--插入后的验证 3811 + 1064 = 4875
+--select * from abklendwork where left(loperator,1) = '六'
+--select 3811 + 1064;
