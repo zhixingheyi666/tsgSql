@@ -15,8 +15,20 @@ def getConfig(option):
     :param tempNum: 参数用于决定需要生成多少条借阅记录，可以在配置文件config.py中设定
                         例如：用于20171016借阅记录生成条目总数的限制，开学仅仅一个半月，限制在960条吧
                         此时可以设置tempNum = 960,那么仅仅会有960条生成的记录写入数据库
+    :param temp: 由于程序没有添加相应的处理语句，这参数和tempNum两个参数不能省略，
+                    当temp设定为False时，tempNum的设定值将不会被程序采用
     """
     if 1 == 1:
+        if option == 20180625:
+            bidInuse = set()
+            beginDate = '2018-03-05'
+            endDate = '2018-06-22'
+            holiday = ['04-05', '04-06', '04-07', '04-29', '04-30', '05-01', '05-17', '05-18', '05-16']
+            workday = ['04-08', '04-28']
+            yearbefore = 0
+            temp = False
+            tempNum = 3200
+
         if option == 20180107:
             bidInuse = set()
             beginDate = '2017-09-04'

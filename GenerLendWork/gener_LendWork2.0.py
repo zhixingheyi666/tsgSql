@@ -22,7 +22,7 @@ lDay: lendDay,生成借阅记录中日期部分的函数
 def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=4, Reader='All', tmp=False, temp=False, tempNum=0):
     """
     :param beginDate: 要生成借阅记录的起始时间,一般为学期开始 格式为: yyyy-mm-dd
-    :param endDate: 要生成的借阅记录的借书时间 格式为: yyyy-mm-dd
+    :param endDate: 要生成的借阅记录的结束时间 格式为: yyyy-mm-dd
     :param Holiday: 在 beginDate 和 endDate 之间的法定节假日,例如十一假期,中秋节等
                     格式为: [mm-dd,mm-dd,...] 是一个list,每年不尽相同,要根据实际调整
     :param Workday: 在 beginDate 和 endDate 之间法定节假日调休而产生的工作日
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     传递一个option给getConfig,用来选择相应的日期参数
     """
     from config import getConfig
-    option = 20180107
+    option = 20180625
     kw = getConfig(option)
     if kw == -1:
         logger.warn('Break in function getConfig!')
