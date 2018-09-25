@@ -19,7 +19,7 @@ lDay: lendDay,生成借阅记录中日期部分的函数
 """
 
 
-def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=4, Reader='All', tmp=False, temp=False, tempNum=0):
+def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=5, Reader='All', tmp=True, temp=False, tempNum=0):
     """
     :param beginDate: 要生成借阅记录的起始时间,一般为学期开始 格式为: yyyy-mm-dd
     :param endDate: 要生成的借阅记录的结束时间 格式为: yyyy-mm-dd
@@ -27,15 +27,23 @@ def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=4, Reader='All
                     格式为: [mm-dd,mm-dd,...] 是一个list,每年不尽相同,要根据实际调整
     :param Workday: 在 beginDate 和 endDate 之间法定节假日调休而产生的工作日
                     格式为: [mm-dd,mm-dd,...] 是一个list,每年不尽相同,要根据实际调整
-    :param yearBefore: 如果为0,表示生成本学年度的借阅记录.果值为n,表示生成从当前年份向前数第n年的借阅记录.
+    :param yearBefore: 如果为0,表示生成本学年度的借阅记录.
+                        (一个学年度两个学期，从一个暑假到另一个暑假之间的时间
+                         同一学年度内，学生的年级不会发生变化，如果进入下一学年度，学生的年级将
+                         升高一级，例如从五年级升入六年级)
+                        如果值为n,表示生成从当前年份向前数第n年的借阅记录.
     :param times:   典型值是一个学期4次,表示在起始和结束日期之间,平均为每个学生生成times条借阅记录.
     :param tempNum: 参数用于决定需要生成多少条借阅记录，可以在配置文件config.py中设定
                         例如：用于20171016借阅记录生成条目总数的限制，开学仅仅一个半月，限制在960条吧
                         此时可以设置tempNum = 960,那么仅仅会有960条生成的记录写入数据库
     :param Reader: 留用
     :param tmp: 测试程序时,将其值置为1.此时生成的借阅记录的loperator为<王_00>.
-                    测试完毕,可用  'delete from LendWork where loperator="王_00"'  语句仅将测试数据删除.
-    :param temp: 通常是按整个学期生成借阅记录,如果学期还未结束,有检查的来,需要临时生成一些借阅
+                    测试完毕,可用  "delete from LendWork where loperator='王_00'"  语句仅将测试数据删除.
+                    ·注意在sql中，字符串是用单引号包围起来的部分，如果用双引号或者反引号包围，
+                        那么表示的是列名，例如同样是上面的句子，如果这样写
+                            delete from LendWork where loperator="王_00"
+                        就会报找不到列名 王_00 的错误
+    :param temp: (会生成部分未归还记录)通常是按整个学期生成借阅记录,如果学期还未结束,有检查的来,需要临时生成一些借阅
                     记录,将此参数置为Ture,则可以生成一些<未归还>的书籍,让生成的结果更逼真.
                     bug:有学生会在重叠的时间段内借阅两本书,以后可以在最后再加一个筛选函数解决
      :gStat:  函数状态标志，以后每个函数都应包含名为Stat的函数状态标志
@@ -53,10 +61,21 @@ def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=4, Reader='All
         总记录数 = 一年级人数 * 2.5 + 二年级人数 * 3.5 +三年级人数 * 4 +四年级人数 * 4.5 +五年级人数 * 5.5 +六年级人数 * 4
     """
     bidInuse = set()
-    tGrade = [['一', 2.5], ['二', 3.5], ['三', 4], ['四', 4.5], ['五', 5.5], ['六', 4]]
+    times = times/4
+    tGrade = [['一', 2.5*times], ['二', 3.5*times], ['三', 4*times], ['四', 4.5*times], ['五', 5.5*times], ['六', 4*times]]
     if yearBefore == 0:
         tGrid = tGbid = tGrade
     else:
+        """
+        这里的巧妙写法，应该添加详细注释
+        下面的语句中，会把tGrid和tGbid对应起来，加入yearBefore的值为1
+        则tGrid的序列是二三四五六，
+          tGbid的序列是一二三四五，
+          rid表示的是读者目前分别就读于二三四五六年级，那么1年以前，
+          他们所在的年级应当是一二三四五年级，所以那个时间，他们应当
+          借阅的书籍应该分别是从前一二三四五年级学生借阅过的书籍，所以
+          tGbid就选一二三四五，
+        """
         tGrid = tGrade[yearBefore:]
         tGbid = tGrade[: -yearBefore]
     ttRidBid = []
@@ -147,7 +166,7 @@ if __name__ == '__main__':
     传递一个option给getConfig,用来选择相应的日期参数
     """
     from config import getConfig
-    option = 20180625
+    option = 20180629
     kw = getConfig(option)
     if kw == -1:
         logger.warn('Break in function getConfig!')

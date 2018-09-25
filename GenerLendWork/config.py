@@ -17,8 +17,19 @@ def getConfig(option):
                         此时可以设置tempNum = 960,那么仅仅会有960条生成的记录写入数据库
     :param temp: 由于程序没有添加相应的处理语句，这参数和tempNum两个参数不能省略，
                     当temp设定为False时，tempNum的设定值将不会被程序采用
+    ··注意，times和tmp参数这里并没有设置接口，如果需要，可以直接修改gener函数对应位置的默认值
     """
     if 1 == 1:
+        if option == 20180629:
+            bidInuse = set()
+            beginDate = '2018-03-05'
+            endDate = '2018-06-22'
+            holiday = ['04-05', '04-06', '04-07', '04-29', '04-30', '05-01', '05-17', '05-18', '05-16']
+            workday = ['04-08', '04-28']
+            yearbefore = 1
+            temp = False
+            tempNum = 1500
+
         if option == 20180625:
             bidInuse = set()
             beginDate = '2018-03-05'
