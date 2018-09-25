@@ -5,6 +5,7 @@ import random, pdb
 from itertools import zip_longest as myzip
 
 from fc.conn_SQL import *
+from fc.LOG_sf import logger
 
 cursor, mkconn = mkcon('mic')
 
@@ -19,7 +20,7 @@ lDay: lendDay,生成借阅记录中日期部分的函数
 """
 
 
-def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=5, Reader='All', tmp=True, temp=False, tempNum=0):
+def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=5, Reader='All', tmp=False, temp=False, tempNum=0):
     """
     :param beginDate: 要生成借阅记录的起始时间,一般为学期开始 格式为: yyyy-mm-dd
     :param endDate: 要生成的借阅记录的结束时间 格式为: yyyy-mm-dd
@@ -37,7 +38,7 @@ def gener(beginDate, endDate, Holiday, Workday, yearBefore, times=5, Reader='All
                         例如：用于20171016借阅记录生成条目总数的限制，开学仅仅一个半月，限制在960条吧
                         此时可以设置tempNum = 960,那么仅仅会有960条生成的记录写入数据库
     :param Reader: 留用
-    :param tmp: 测试程序时,将其值置为1.此时生成的借阅记录的loperator为<王_00>.
+    :param tmp: 测试程序时,或者学期中间检查，生成一些临时记录,将其值置为1.此时生成的借阅记录的loperator为<王_00>.
                     测试完毕,可用  "delete from LendWork where loperator='王_00'"  语句仅将测试数据删除.
                     ·注意在sql中，字符串是用单引号包围起来的部分，如果用双引号或者反引号包围，
                         那么表示的是列名，例如同样是上面的句子，如果这样写
@@ -166,7 +167,7 @@ if __name__ == '__main__':
     传递一个option给getConfig,用来选择相应的日期参数
     """
     from config import getConfig
-    option = 20180629
+    option = 20180926
     kw = getConfig(option)
     if kw == -1:
         logger.warn('Break in function getConfig!')

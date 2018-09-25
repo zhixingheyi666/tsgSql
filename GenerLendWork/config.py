@@ -4,6 +4,7 @@
 2.这里用了一个option,因为每次生成借阅记录,都要重新组织日期参数,
     从主程序传递一个option,用来选择相应的日期参数
 """
+from fc.LOG_sf import logger
 
 __author__ = 'Master Wang'
 
@@ -17,16 +18,28 @@ def getConfig(option):
                         此时可以设置tempNum = 960,那么仅仅会有960条生成的记录写入数据库
     :param temp: 由于程序没有添加相应的处理语句，这参数和tempNum两个参数不能省略，
                     当temp设定为False时，tempNum的设定值将不会被程序采用
-    ··注意，times和tmp参数这里并没有设置接口，如果需要，可以直接修改gener函数对应位置的默认值
+    ··注意，times参数这里并没有设置接口，如果需要，可以直接修改gener函数对应位置的默认值
     """
     if 1 == 1:
-        if option == 20180629:
+        if option == 20180926:
+            bidInuse = set()
+            beginDate = '2018-09-03'
+            endDate = '2018-09-26'
+            holiday = ['09-24']
+            workday = []
+            yearbefore = 0
+            tmp = True
+            temp = True
+            tempNum = 640
+
+        if option == 20180925:
             bidInuse = set()
             beginDate = '2018-03-05'
             endDate = '2018-06-22'
             holiday = ['04-05', '04-06', '04-07', '04-29', '04-30', '05-01', '05-17', '05-18', '05-16']
             workday = ['04-08', '04-28']
             yearbefore = 1
+            tmp = False
             temp = False
             tempNum = 1500
 
@@ -37,6 +50,7 @@ def getConfig(option):
             holiday = ['04-05', '04-06', '04-07', '04-29', '04-30', '05-01', '05-17', '05-18', '05-16']
             workday = ['04-08', '04-28']
             yearbefore = 0
+            tmp = False
             temp = False
             tempNum = 3200
 
@@ -46,6 +60,7 @@ def getConfig(option):
             endDate = '2018-01-07'
             holiday = ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08', '12-30', '12-31', '01-01']
             workday = ['09-30']
+            tmp = False
             temp = True
             tempNum = 2800
             yearbefore = 0
@@ -56,14 +71,18 @@ def getConfig(option):
             endDate = '2017-11-10'
             holiday = ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08']
             workday = ['09-30']
+            tmp = False
             temp = True
             tempNum = 1516
             yearbefore = 0
     try:
         # kw = dict(bidInuse=bidInuse, beginDate=beginDate, endDate=endDate, holiday=holiday, workday=workday, temp=temp)
-        kw = dict(beginDate=beginDate, endDate=endDate, Holiday=holiday, Workday=workday, yearBefore=yearbefore, temp=temp, tempNum=tempNum)
+        kw = dict(beginDate=beginDate, endDate=endDate, Holiday=holiday, Workday=workday, yearBefore=yearbefore, temp=temp, tmp=tmp,tempNum=tempNum)
         return kw
-    except:
+    except BaseException as e:
+        print("No option matches,Please check the option string！！")
+        logger.warn(e)
+        logger.warn("No option matches,Please check the option string！！")
         return -1
 
 
@@ -75,6 +94,7 @@ def getConfig(option):
             endDate = '2017-11-01'
             holiday = ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08']
             workday = ['09-30', '05-27']
+            tmp = False
             temp = True
             tempNum = 960
             yearbefore = 0
