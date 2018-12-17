@@ -21,7 +21,6 @@ def gener_books( num='',Bcid="I999/9999", Clerk='王_00', State=0, EnterDate='',
     # Bid = ['0'+str(i) for i in range(60000, 60000+num)]
     # #相应的总括登记号
     # inForm = 8
-
     # 生成插入是的数据
     books = [(Bcid, bid, State, Clerk, EnterDate, price, sk, inForm) for bid in Bid]
 
