@@ -167,7 +167,7 @@ if __name__ == '__main__':
     传递一个option给getConfig,用来选择相应的日期参数
     """
     from config import getConfig
-    option = 20180926
+    option = 20181217
     kw = getConfig(option)
     if kw == -1:
         logger.warn('Break in function getConfig!')

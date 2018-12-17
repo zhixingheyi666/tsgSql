@@ -21,6 +21,39 @@ def getConfig(option):
     ··注意，times参数这里并没有设置接口，如果需要，可以直接修改gener函数对应位置的默认值
     """
     if 1 == 1:
+        if option == 20181217:
+           bidInuse = set()
+           beginDate = '2018-09-03'
+           endDate = '2018-12-17'
+           holiday = ['09-24', '10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07']
+           workday = ['09-29', '09-30']
+           yearbefore = 0
+           tmp = True
+           temp = True
+           tempNum = 2200
+
+        if option == 20181112:
+            bidInuse = set()
+            beginDate = '2018-09-03'
+            endDate = '2018-11-16'
+            holiday = ['09-24', '10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07']
+            workday = ['09-29', '09-30']
+            yearbefore = 0
+            tmp = True
+            temp = True
+            tempNum = 1700
+
+        if option == 20181105:
+            bidInuse = set()
+            beginDate = '2018-09-03'
+            endDate = '2018-11-04'
+            holiday = ['09-24', '10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07']
+            workday = ['09-29', '09-30']
+            yearbefore = 0
+            tmp = True
+            temp = True
+            tempNum = 1600
+
         if option == 20180926:
             bidInuse = set()
             beginDate = '2018-09-03'
